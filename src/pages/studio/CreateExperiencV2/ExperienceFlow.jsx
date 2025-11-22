@@ -133,10 +133,11 @@ const ExperienceFlow = ({ experiences, setExperiences, onEdit }) => {
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`group relative bg-white rounded-lg border-2 transition-all duration-200 ${
-                  draggedIndex === index 
-                    ? 'opacity-40 scale-95 border-indigo-400 shadow-lg' 
-                    : 'border-gray-200 hover:border-indigo-300 hover:shadow-md cursor-grab active:cursor-grabbing'
+                onClick={() => handleEdit(experience, index)}
+                className={`group relative bg-white rounded-lg border-2 transition-all duration-200 cursor-pointer ${
+                  draggedIndex === index
+                    ? 'opacity-40 scale-95 border-indigo-400 shadow-lg'
+                    : 'border-gray-200 hover:border-indigo-400 hover:shadow-lg active:border-indigo-500'
                 }`}
               >
                 {/* Drag Handle Indicator */}
