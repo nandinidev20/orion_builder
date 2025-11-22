@@ -394,7 +394,7 @@ const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditi
               {isEditing ? 'Edit Stage' : 'Create New Stage'}
             </h3>
             <p className="text-sm text-gray-600">
-              {isEditing ? 'Update your stage details' : 'Add a new experience stage'}
+              {isEditing ? 'Changes update automatically' : 'Add a new experience stage'}
             </p>
           </div>
         </div>
