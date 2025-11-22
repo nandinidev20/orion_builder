@@ -39,16 +39,16 @@ const getTypeIcon = (type) => {
 
 const ExperienceCard = ({ experience }) => {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3 group/card">
       <div className="flex-shrink-0 mt-0.5">
         {getTypeIcon(experience.type)}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="text-sm font-semibold text-gray-900 leading-tight">{experience.title}</h4>
+          <h4 className="text-sm font-semibold text-gray-900 leading-tight group-hover/card:text-indigo-600 transition-colors">{experience.title}</h4>
           <span className="text-xs text-gray-500 whitespace-nowrap flex-shrink-0">{experience.duration}</span>
         </div>
-        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{experience.description}</p>
+        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed group-hover/card:text-gray-700 transition-colors">{experience.description}</p>
       </div>
     </div>
   );
