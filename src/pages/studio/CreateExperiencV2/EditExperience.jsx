@@ -585,6 +585,9 @@ const EditExperience = () => {
                   updateStageEditorData={updateStageEditorData}
                   addStage={addStage}
                   isEditing={editingStageIndex !== null}
+                  editingStageIndex={editingStageIndex}
+                  experienceData={experienceData}
+                  updateExperienceData={updateExperienceData}
                   onCancelEdit={() => {
                     setEditingStageIndex(null);
                     setIsStageEditorVisible(false);
