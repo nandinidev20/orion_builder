@@ -24,10 +24,22 @@ const Users = () => {
     total: 0
   });
 
-  // Fetch users from API when component mounts
+  // Fetch users and current user on component mount
   useEffect(() => {
     fetchUsers();
+    fetchCurrentUser();
   }, []);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await api.get('/admin/current-user');
+      if (response.data.success) {
+        setCurrentUser(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
+  };
 
   const fetchUsers = async (page = 1) => {
     try {
