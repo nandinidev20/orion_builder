@@ -688,7 +688,6 @@ const Users = () => {
               <h2 className="text-lg font-semibold text-gray-900">
                 {roleAction === 'make-admin' && 'Make Admin'}
                 {roleAction === 'remove-admin' && 'Remove Admin'}
-                {roleAction === 'set-super-admin' && 'Set Super Admin'}
               </h2>
               <button
                 onClick={() => setShowRoleModal(false)}
