@@ -184,16 +184,48 @@ const CreateExperience = () => {
       uploadedFile: null,
       pastedText: ''
     }));
-    
+
     // Reset file input element
     if (resetFileInput) {
       resetFileInput();
     }
-    
+
     // Hide the stage editor form after adding a new stage (but not when editing)
     if (editingStageIndex === null) {
       setIsStageEditorVisible(false);
     }
+  };
+
+  // Function to finalize stage save when editing
+  const finalizeStageSave = () => {
+    // Validate that content has been provided
+    const hasContent = stageEditorData.uploadedFile || stageEditorData.pastedText;
+
+    if (!hasContent) {
+      alert(`Please ${stageEditorData.stageType === 'text' ? 'upload a file or paste text' : 'upload a file'} before saving the stage.`);
+      return;
+    }
+
+    // The auto-sync has already updated the stages array, we just need to finalize
+    console.log('Stage save finalized for index:', editingStageIndex);
+
+    // Reset editing state
+    setEditingStageIndex(null);
+
+    // Reset stage editor
+    setStageEditorData(prev => ({
+      ...prev,
+      stageTitle: '',
+      stageDescription: '',
+      buttonSettings: 'tap',
+      buttonName: 'Tap to Unlock',
+      codeValue: '',
+      uploadedFile: null,
+      pastedText: ''
+    }));
+
+    // Hide the stage editor form
+    setIsStageEditorVisible(false);
   };
 
   // Function to handle editing an existing stage or showing the form for adding a new one
