@@ -1038,71 +1038,11 @@ const removeAdmin = async (req, res, next) => {
   }
 };
 
-// Set a user as the super admin
-const setSuperAdmin = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const currentUser = req.user;
-
-    // Only current super admin can change super admin
-    if (!currentUser.isSuperAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Only super admin can designate another super admin'
-      });
-    }
-
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // User must be an admin to become super admin
-    if (user.role !== 'admin') {
-      return res.status(400).json({
-        success: false,
-        message: 'User must be an admin to become super admin'
-      });
-    }
-
-    // If user is already super admin, return success
-    if (user.isSuperAdmin) {
-      return res.success({ user }, 'User is already super admin');
-    }
-
-    // Remove super admin status from current super admin
-    await User.updateOne(
-      { isSuperAdmin: true, _id: { $ne: id } },
-      { isSuperAdmin: false }
-    );
-
-    // Set new super admin
-    user.isSuperAdmin = true;
-    await user.save();
-
-    res.success({ user }, 'Super admin designation updated successfully');
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Reset a user's password (super admin only)
+// Reset a user's password (admin only)
 const resetUserPassword = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { newPassword } = req.body;
-    const currentUser = req.user;
-
-    // Only super admin can reset passwords
-    if (!currentUser.isSuperAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Only super admin can reset user passwords'
-      });
-    }
 
     // Validate password
     if (!newPassword || newPassword.length < 8) {
