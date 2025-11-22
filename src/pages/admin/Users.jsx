@@ -11,7 +11,6 @@ const Users = () => {
   const [actionType, setActionType] = useState(null);
   const [newInvite, setNewInvite] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [userToModify, setUserToModify] = useState(null);
   const [roleAction, setRoleAction] = useState(null);
