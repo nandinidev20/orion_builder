@@ -197,7 +197,15 @@ const EditExperience = () => {
   };
 
   // Function to add a new stage or update an existing one
- const addStage = (resetFileInput) => {
+  const addStage = (resetFileInput) => {
+    // Validate that content has been provided
+    const hasContent = stageEditorData.uploadedFile || stageEditorData.pastedText;
+
+    if (!hasContent) {
+      alert(`Please ${stageEditorData.stageType === 'text' ? 'upload a file or paste text' : 'upload a file'} before saving the stage.`);
+      return;
+    }
+
     const stageData = {
       id: editingStageIndex !== null ? experienceData.stages[editingStageIndex].id : Date.now(), // Use existing ID if editing
       position: editingStageIndex !== null ? experienceData.stages[editingStageIndex].position : experienceData.stages.length, // Position index
@@ -239,11 +247,40 @@ const EditExperience = () => {
       uploadedFile: null,
       pastedText: ''
     }));
-    
+
     // Reset file input element
     if (resetFileInput) {
       resetFileInput();
     }
+  };
+
+  // Function to finalize stage save when editing
+  const finalizeStageSave = () => {
+    // Validate that content has been provided
+    const hasContent = stageEditorData.uploadedFile || stageEditorData.pastedText;
+
+    if (!hasContent) {
+      alert(`Please ${stageEditorData.stageType === 'text' ? 'upload a file or paste text' : 'upload a file'} before saving the stage.`);
+      return;
+    }
+
+    // The auto-sync has already updated the stages array, we just need to finalize
+    console.log('Stage save finalized for index:', editingStageIndex);
+
+    // Reset editing state
+    setEditingStageIndex(null);
+
+    // Reset stage editor
+    setStageEditorData(prev => ({
+      ...prev,
+      stageTitle: '',
+      stageDescription: '',
+      buttonSettings: 'tap',
+      buttonName: 'Tap to Unlock',
+      codeValue: '',
+      uploadedFile: null,
+      pastedText: ''
+    }));
   };
 
   // Function to handle editing an existing stage
