@@ -629,7 +629,13 @@ const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditi
             <button
               className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
               onClick={() => {
-                // Close editor without saving (changes already synced to array)
+                // Validate that content has been provided
+                const hasContent = uploadedFile || pastedText;
+                if (!hasContent) {
+                  alert(`Please ${stageType === 'text' ? 'upload a file or paste text' : 'upload a file'} before saving the stage.`);
+                  return;
+                }
+                // Close editor after validation
                 onCancelEdit();
               }}
             >
