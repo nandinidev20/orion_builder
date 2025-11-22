@@ -1004,15 +1004,6 @@ const makeAdmin = async (req, res, next) => {
 const removeAdmin = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const currentUser = req.user;
-
-    // Only super admin can remove admin roles
-    if (!currentUser.isSuperAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Only super admin can remove admin privileges'
-      });
-    }
 
     const user = await User.findById(id);
     if (!user) {
