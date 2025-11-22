@@ -945,6 +945,197 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+// Make a studio user into an admin
+const makeAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const currentUser = req.user;
+
+    // Only super admin can make users admins
+    if (!currentUser.isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only super admin can promote users to admin'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Can only promote studio users to admin
+    if (user.role === 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'User is already an admin'
+      });
+    }
+
+    user.role = 'admin';
+    await user.save();
+
+    res.success({ user }, 'User promoted to admin successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Remove admin role from a user
+const removeAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const currentUser = req.user;
+
+    // Only super admin can remove admin roles
+    if (!currentUser.isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only super admin can remove admin privileges'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Cannot remove admin from super admin
+    if (user.isSuperAdmin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot remove admin role from the super admin'
+      });
+    }
+
+    // Can only demote admin users
+    if (user.role !== 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'User is not an admin'
+      });
+    }
+
+    user.role = 'studio';
+    await user.save();
+
+    res.success({ user }, 'User demoted to studio user successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Set a user as the super admin
+const setSuperAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const currentUser = req.user;
+
+    // Only current super admin can change super admin
+    if (!currentUser.isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only super admin can designate another super admin'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // User must be an admin to become super admin
+    if (user.role !== 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'User must be an admin to become super admin'
+      });
+    }
+
+    // If user is already super admin, return success
+    if (user.isSuperAdmin) {
+      return res.success({ user }, 'User is already super admin');
+    }
+
+    // Remove super admin status from current super admin
+    await User.updateOne(
+      { isSuperAdmin: true, _id: { $ne: id } },
+      { isSuperAdmin: false }
+    );
+
+    // Set new super admin
+    user.isSuperAdmin = true;
+    await user.save();
+
+    res.success({ user }, 'Super admin designation updated successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Reset a user's password (super admin only)
+const resetUserPassword = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+    const currentUser = req.user;
+
+    // Only super admin can reset passwords
+    if (!currentUser.isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only super admin can reset user passwords'
+      });
+    }
+
+    // Validate password
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Cannot reset super admin's password
+    if (user.isSuperAdmin && user._id.toString() !== currentUser._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Cannot reset the super admin password'
+      });
+    }
+
+    // Reset the password on the associated studio if it exists
+    if (user.studio) {
+      const studio = await Studio.findById(user.studio).select('+password');
+      if (studio) {
+        studio.password = newPassword;
+        await studio.save();
+      }
+    }
+
+    res.success({ user }, 'Password reset successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getDashboardStats,
   getRecentStudios,
@@ -962,6 +1153,11 @@ export {
   suspendUser,
   reactivateUser,
   deleteUser,
+  // Admin role management functions
+  makeAdmin,
+  removeAdmin,
+  setSuperAdmin,
+  resetUserPassword,
   // Admin settings functions
   changeAdminEmail,
   changeAdminPassword
