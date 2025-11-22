@@ -211,15 +211,12 @@ const Users = () => {
         endpoint = `/admin/users/${userToModify.id}/make-admin`;
       } else if (roleAction === 'remove-admin') {
         endpoint = `/admin/users/${userToModify.id}/remove-admin`;
-      } else if (roleAction === 'set-super-admin') {
-        endpoint = `/admin/users/${userToModify.id}/set-super-admin`;
       }
 
       if (endpoint) {
         const response = await api.post(endpoint);
         if (response.data.success) {
           await fetchUsers();
-          await fetchCurrentUser();
           alert('Role updated successfully!');
         }
       }
