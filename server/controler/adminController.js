@@ -515,6 +515,8 @@ const getAllUsers = async (req, res, next) => {
         name: user?.username || invite.name || 'N/A',
         email: invite.email,
         studioName: user?.studio?.studioName || 'Not Registered',
+        role: user?.role || 'studio',
+        isSuperAdmin: user?.isSuperAdmin || false,
         status: user
           ? (user.isActive ? (user.studio && user.studio.isSuspended ? 'suspended' : 'active') : 'inactive')
           : invite.status || 'invited',
