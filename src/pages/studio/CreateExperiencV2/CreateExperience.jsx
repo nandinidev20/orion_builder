@@ -520,14 +520,17 @@ const CreateExperience = () => {
             {/* Column 2: Stage Editor (larger) */}
             <div className="lg:col-span-6">
               {(isStageEditorVisible || editingStageIndex !== null) ? (
-                <StageEditor 
+                <StageEditor
                   stageEditorData={stageEditorData}
                   updateStageEditorData={updateStageEditorData}
                   addStage={addStage}
                   isEditing={editingStageIndex !== null}
+                  editingStageIndex={editingStageIndex}
+                  experienceData={experienceData}
+                  updateExperienceData={updateExperienceData}
                   onCancelEdit={() => {
                     setEditingStageIndex(null);
-                    setIsStageEditorVisible(false); // Hide the form when canceling edit
+                    setIsStageEditorVisible(false);
                     setStageEditorData({
                       stageType: 'video',
                       stageTitle: '',
