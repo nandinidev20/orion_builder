@@ -38,6 +38,9 @@ import {
   changeStudioPassword
 } from '../controler/studioDashboardController.js';
 
+// Admin user info route
+router.get('/current-user', auth, authorize('admin'), getCurrentUser);
+
 // Admin dashboard routes - require admin role
 router.get('/dashboard/stats', auth, authorize('admin'), getDashboardStats);
 router.get('/dashboard/recent-studios', auth, authorize('admin'), getRecentStudios);
