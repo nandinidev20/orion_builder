@@ -352,7 +352,7 @@ const Users = () => {
               <tbody className="divide-y divide-gray-200">
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-4 py-8 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td colSpan="7" className="px-4 py-8 whitespace-nowrap text-sm text-gray-500 text-center">
                       No users found
                     </td>
                   </tr>
