@@ -206,6 +206,90 @@ const Users = () => {
     setActionType(null);
   };
 
+  // Function to handle opening role change confirmation
+  const openRoleModal = (user, action) => {
+    setUserToModify(user);
+    setRoleAction(action);
+    setShowRoleModal(true);
+  };
+
+  // Function to handle role change
+  const confirmRoleChange = async () => {
+    if (!userToModify || !roleAction) return;
+    setIsSubmitting(true);
+
+    try {
+      let endpoint = '';
+      if (roleAction === 'make-admin') {
+        endpoint = `/admin/users/${userToModify.id}/make-admin`;
+      } else if (roleAction === 'remove-admin') {
+        endpoint = `/admin/users/${userToModify.id}/remove-admin`;
+      } else if (roleAction === 'set-super-admin') {
+        endpoint = `/admin/users/${userToModify.id}/set-super-admin`;
+      }
+
+      if (endpoint) {
+        const response = await api.post(endpoint);
+        if (response.data.success) {
+          await fetchUsers();
+          await fetchCurrentUser();
+          alert('Role updated successfully!');
+        }
+      }
+    } catch (error) {
+      console.error(`Error updating role:`, error);
+      const errorMessage = error.response?.data?.message || 'Failed to update role';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+      setShowRoleModal(false);
+      setUserToModify(null);
+      setRoleAction(null);
+    }
+  };
+
+  // Function to open reset password modal
+  const openResetPasswordModal = (user) => {
+    setUserToReset(user);
+    setNewPassword('');
+    setShowResetPasswordModal(true);
+  };
+
+  // Function to handle password reset
+  const confirmResetPassword = async () => {
+    if (!userToReset || !newPassword) {
+      alert('Please enter a new password');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      alert('Password must be at least 8 characters long');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await api.post(`/admin/users/${userToReset.id}/reset-password`, {
+        newPassword
+      });
+
+      if (response.data.success) {
+        alert('Password reset successfully!');
+        await fetchUsers();
+        setShowResetPasswordModal(false);
+        setUserToReset(null);
+        setNewPassword('');
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to reset password';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Function to get status badge class
   const getStatusClass = (status) => {
     switch (status) {
