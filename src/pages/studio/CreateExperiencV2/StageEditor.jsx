@@ -190,6 +190,25 @@ const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditi
 
   const fileInputRef = useRef(null);
 
+  // Auto-sync changes to the stages array when editing
+  useEffect(() => {
+    if (isEditing && editingStageIndex !== null && experienceData && updateExperienceData) {
+      const updatedStages = [...experienceData.stages];
+      updatedStages[editingStageIndex] = {
+        ...updatedStages[editingStageIndex],
+        type: stageEditorData.stageType,
+        title: stageEditorData.stageTitle || `Stage ${editingStageIndex + 1}`,
+        description: stageEditorData.stageDescription,
+        buttonSettings: stageEditorData.buttonSettings,
+        buttonName: stageEditorData.buttonName,
+        codeValue: stageEditorData.codeValue,
+        uploadedFile: stageEditorData.uploadedFile,
+        pastedText: stageEditorData.pastedText
+      };
+      updateExperienceData('stages', updatedStages);
+    }
+  }, [stageEditorData, isEditing, editingStageIndex, experienceData, updateExperienceData]);
+
   const setStageType = (value) => updateStageEditorData('stageType', value);
   const setStageTitle = (value) => updateStageEditorData('stageTitle', value);
   const setStageDescription = (value) => updateStageEditorData('stageDescription', value);
