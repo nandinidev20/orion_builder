@@ -560,7 +560,7 @@ const CreateExperience = () => {
                   editingStageIndex={editingStageIndex}
                   experienceData={experienceData}
                   updateExperienceData={updateExperienceData}
-                  onCancelEdit={() => {
+                  onCancelEdit={editingStageIndex !== null ? finalizeStageSave : () => {
                     setEditingStageIndex(null);
                     setIsStageEditorVisible(false);
                     setStageEditorData({
