@@ -8,6 +8,29 @@ import { ValidationError } from '../utils/ApiError.js';
 import { sendUserInviteEmail, sendResendInviteEmail } from '../services/emailService.js';
 import { hashPassword } from '../services/authService.js';
 
+// Get current admin user info
+const getCurrentUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.success({
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      isSuperAdmin: user.isSuperAdmin,
+      isActive: user.isActive
+    }, 'Current user info retrieved successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get dashboard statistics
 const getDashboardStats = async (req, res, next) => {
   try {
