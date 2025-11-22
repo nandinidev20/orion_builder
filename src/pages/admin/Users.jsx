@@ -709,6 +709,111 @@ const Users = () => {
           </div>
         </div>
       )}
+
+      {/* Role Management Modal */}
+      {showRoleModal && userToModify && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {roleAction === 'make-admin' && 'Make Admin'}
+                {roleAction === 'remove-admin' && 'Remove Admin'}
+                {roleAction === 'set-super-admin' && 'Set Super Admin'}
+              </h2>
+              <button
+                onClick={() => setShowRoleModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <p className="mb-6 text-gray-700">
+              {roleAction === 'make-admin' && `Are you sure you want to make ${userToModify.name} an admin? They will have access to admin management tools.`}
+              {roleAction === 'remove-admin' && `Are you sure you want to remove admin privileges from ${userToModify.name}? They will be downgraded to a studio user.`}
+              {roleAction === 'set-super-admin' && `Are you sure you want to set ${userToModify.name} as the super admin? The current super admin will be demoted to regular admin.`}
+            </p>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setShowRoleModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmRoleChange}
+                disabled={isSubmitting}
+                className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-50 ${
+                  roleAction === 'make-admin'
+                    ? 'bg-indigo-600 hover:bg-indigo-700'
+                    : roleAction === 'remove-admin'
+                    ? 'bg-yellow-600 hover:bg-yellow-700'
+                    : 'bg-purple-600 hover:bg-purple-700'
+                }`}
+              >
+                {isSubmitting ? 'Updating...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {showResetPasswordModal && userToReset && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Reset Password</h2>
+              <button
+                onClick={() => setShowResetPasswordModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <p className="mb-4 text-gray-700">
+              Set a new password for <strong>{userToReset.name}</strong> ({userToReset.email})
+            </p>
+
+            <form onSubmit={(e) => { e.preventDefault(); confirmResetPassword(); }}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Enter new password (min. 8 characters)"
+                  required
+                  minLength={8}
+                />
+                <p className="mt-1 text-sm text-gray-500">* Password must be at least 8 characters long</p>
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowResetPasswordModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || newPassword.length < 8}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Resetting...' : 'Reset Password'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
