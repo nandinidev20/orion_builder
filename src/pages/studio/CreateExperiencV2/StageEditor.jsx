@@ -176,7 +176,7 @@ const HLSMediaPreview = ({ src, fileType, fileName, experienceId, stageId, isSto
   }
 };
 
-const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditing, onCancelEdit, experienceId, stageId, editingStageIndex, experienceData, updateExperienceData }) => {
+const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditing, onCancelEdit, experienceId, stageId, editingStageIndex, experienceData, updateExperienceData, onSaveStage }) => {
   const {
     stageType,
     stageTitle,
@@ -191,9 +191,18 @@ const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditi
   const fileInputRef = useRef(null);
 
   // Auto-sync changes to the stages array when editing
+  // Note: We use useRef to store the updateExperienceData function to avoid dependency changes
+  const updateExperienceDataRef = useRef(updateExperienceData);
+  const experienceDataRef = useRef(experienceData);
+
   useEffect(() => {
-    if (isEditing && editingStageIndex !== null && experienceData && updateExperienceData) {
-      const updatedStages = [...experienceData.stages];
+    updateExperienceDataRef.current = updateExperienceData;
+    experienceDataRef.current = experienceData;
+  }, [updateExperienceData, experienceData]);
+
+  useEffect(() => {
+    if (isEditing && editingStageIndex !== null && experienceDataRef.current && updateExperienceDataRef.current) {
+      const updatedStages = [...experienceDataRef.current.stages];
       updatedStages[editingStageIndex] = {
         ...updatedStages[editingStageIndex],
         type: stageEditorData.stageType,
@@ -205,9 +214,9 @@ const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditi
         uploadedFile: stageEditorData.uploadedFile,
         pastedText: stageEditorData.pastedText
       };
-      updateExperienceData('stages', updatedStages);
+      updateExperienceDataRef.current('stages', updatedStages);
     }
-  }, [stageEditorData, isEditing, editingStageIndex, experienceData, updateExperienceData]);
+  }, [stageEditorData, isEditing, editingStageIndex]);
 
   const setStageType = (value) => updateStageEditorData('stageType', value);
   const setStageTitle = (value) => updateStageEditorData('stageTitle', value);
