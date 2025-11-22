@@ -335,11 +335,14 @@ const EditExperience = () => {
 
             {/* Column 2: Stage Editor (larger) */}
             <div className="lg:col-span-6">
-              <StageEditor 
+              <StageEditor
                 stageEditorData={stageEditorData}
                 updateStageEditorData={updateStageEditorData}
                 addStage={addStage}
                 isEditing={editingStageIndex !== null}
+                editingStageIndex={editingStageIndex}
+                experienceData={experienceData}
+                updateExperienceData={updateExperienceData}
                 onCancelEdit={() => {
                   setEditingStageIndex(null);
                   setStageEditorData({
