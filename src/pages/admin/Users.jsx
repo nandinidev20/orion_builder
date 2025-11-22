@@ -700,7 +700,6 @@ const Users = () => {
             <p className="mb-6 text-gray-700">
               {roleAction === 'make-admin' && `Are you sure you want to make ${userToModify.name} an admin? They will have access to admin management tools.`}
               {roleAction === 'remove-admin' && `Are you sure you want to remove admin privileges from ${userToModify.name}? They will be downgraded to a studio user.`}
-              {roleAction === 'set-super-admin' && `Are you sure you want to set ${userToModify.name} as the super admin? The current super admin will be demoted to regular admin.`}
             </p>
 
             <div className="mt-6 flex justify-end space-x-3">
