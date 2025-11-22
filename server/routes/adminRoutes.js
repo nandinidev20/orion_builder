@@ -22,7 +22,6 @@ import {
   // Admin role management functions
   makeAdmin,
   removeAdmin,
-  setSuperAdmin,
   resetUserPassword,
   // Admin settings functions
   changeAdminEmail,
