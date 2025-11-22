@@ -2,12 +2,13 @@ import express from 'express';
 const router = express.Router();
 import { auth, authorize } from '../middleware/auth.js';
 import {
- getDashboardStats,
- getRecentStudios,
+  getCurrentUser,
+  getDashboardStats,
+  getRecentStudios,
   getRecentExperiences,
   getPlatformOverview,
   // Additional studio management functions
- getAllStudios,
+  getAllStudios,
   createStudio,
   updateStudio,
   deleteStudio,
