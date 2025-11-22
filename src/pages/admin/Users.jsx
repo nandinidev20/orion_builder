@@ -9,8 +9,15 @@ const Users = () => {
   const [showSuspendConfirmation, setShowSuspendConfirmation] = useState(false);
   const [userToSuspend, setUserToSuspend] = useState(null);
   const [actionType, setActionType] = useState(null);
- const [newInvite, setNewInvite] = useState({ name: '', email: '' });
+  const [newInvite, setNewInvite] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [userToModify, setUserToModify] = useState(null);
+  const [roleAction, setRoleAction] = useState(null);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [userToReset, setUserToReset] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
