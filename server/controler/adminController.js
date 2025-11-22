@@ -1060,14 +1060,6 @@ const resetUserPassword = async (req, res, next) => {
       });
     }
 
-    // Cannot reset super admin's password
-    if (user.isSuperAdmin && user._id.toString() !== currentUser._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'Cannot reset the super admin password'
-      });
-    }
-
     // Reset the password on the associated studio if it exists
     if (user.studio) {
       const studio = await Studio.findById(user.studio).select('+password');
