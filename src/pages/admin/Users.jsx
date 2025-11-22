@@ -717,9 +717,7 @@ const Users = () => {
                 className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-50 ${
                   roleAction === 'make-admin'
                     ? 'bg-indigo-600 hover:bg-indigo-700'
-                    : roleAction === 'remove-admin'
-                    ? 'bg-yellow-600 hover:bg-yellow-700'
-                    : 'bg-purple-600 hover:bg-purple-700'
+                    : 'bg-yellow-600 hover:bg-yellow-700'
                 }`}
               >
                 {isSubmitting ? 'Updating...' : 'Confirm'}
