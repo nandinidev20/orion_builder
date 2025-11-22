@@ -1053,7 +1053,6 @@ const resetUserPassword = async (req, res, next) => {
 };
 
 export {
-  getCurrentUser,
   getDashboardStats,
   getRecentStudios,
   getRecentExperiences,
