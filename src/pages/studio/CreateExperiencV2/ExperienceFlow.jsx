@@ -142,7 +142,17 @@ const ExperienceFlow = ({ experiences, setExperiences, onEdit }) => {
               >
                 {/* Drag Handle Indicator */}
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-400 to-purple-400 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                
+
+                {/* Click Indicator Overlay */}
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="bg-indigo-500 text-white text-xs font-semibold px-2.5 py-1 rounded flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    Click to Edit
+                  </div>
+                </div>
+
                 <div className="p-4">
                   {/* Stage Number Badge */}
                   <div className="flex items-start gap-3">
