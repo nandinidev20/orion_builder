@@ -2,7 +2,6 @@ import express from 'express';
 const router = express.Router();
 import { auth, authorize } from '../middleware/auth.js';
 import {
-  getCurrentUser,
   getDashboardStats,
   getRecentStudios,
   getRecentExperiences,
