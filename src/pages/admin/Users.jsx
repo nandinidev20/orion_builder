@@ -364,57 +364,110 @@ const Users = () => {
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{user.studioName}</td>
                       <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          user.role === 'admin'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {user.isSuperAdmin ? '👑 Super Admin' : (user.role === 'admin' ? 'Admin' : 'Studio User')}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(user.inviteInfo.status)}`}>
                           {user.inviteInfo.status.charAt(0).toUpperCase() + user.inviteInfo.status.slice(1)}
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex space-x-2">
+                        <div className="flex flex-wrap gap-2">
+                          {currentUser?.isSuperAdmin && (
+                            <>
+                              {user.role !== 'admin' && (
+                                <button
+                                  onClick={() => openRoleModal(user, 'make-admin')}
+                                  disabled={isSubmitting}
+                                  className="flex items-center px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800 hover:bg-indigo-200"
+                                  title="Make Admin"
+                                >
+                                  Make Admin
+                                </button>
+                              )}
+                              {user.role === 'admin' && !user.isSuperAdmin && (
+                                <>
+                                  <button
+                                    onClick={() => openRoleModal(user, 'remove-admin')}
+                                    disabled={isSubmitting}
+                                    className="flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                                    title="Remove Admin"
+                                  >
+                                    Remove Admin
+                                  </button>
+                                  <button
+                                    onClick={() => openRoleModal(user, 'set-super-admin')}
+                                    disabled={isSubmitting}
+                                    className="flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800 hover:bg-purple-200"
+                                    title="Set as Super Admin"
+                                  >
+                                    Set Super Admin
+                                  </button>
+                                </>
+                              )}
+                              {(user.role === 'admin' || user.role === 'studio') && (
+                                <button
+                                  onClick={() => openResetPasswordModal(user)}
+                                  disabled={isSubmitting}
+                                  className="flex items-center px-2 py-1 rounded text-xs bg-cyan-100 text-cyan-800 hover:bg-cyan-200"
+                                  title="Reset Password"
+                                >
+                                  Reset Password
+                                </button>
+                              )}
+                            </>
+                          )}
                           {user.inviteInfo.status === 'suspended' ? (
                             <button
                               onClick={() => handleReactivateUser(user.id)}
                               disabled={isSubmitting}
-                              className="flex items-center px-3 py-1 rounded text-sm bg-green-100 text-green-800 hover:bg-green-20"
+                              className="flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800 hover:bg-green-200"
                               title="Reactivate User"
                             >
-                              <Send size={14} className="mr-1" />
+                              <Send size={12} className="mr-1" />
                               Reactivate
                             </button>
                           ) : (
                             <button
                               onClick={() => handleResendInvite(user.id)}
                               disabled={isSubmitting || user.inviteInfo.status !== 'expired'}
-                              className={`flex items-center px-3 py-1 rounded text-sm ${
-                                user.inviteInfo.status === 'expired' 
-                                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' 
+                              className={`flex items-center px-2 py-1 rounded text-xs ${
+                                user.inviteInfo.status === 'expired'
+                                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
                                   : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
                               }`}
                               title="Resend Invite"
                             >
-                              <Send size={14} className="mr-1" />
+                              <Send size={12} className="mr-1" />
                               Resend
                             </button>
                           )}
                           <button
                             onClick={() => openSuspendConfirmation(user.id)}
                             disabled={isSubmitting || user.inviteInfo.status === 'suspended'}
-                            className={`flex items-center px-3 py-1 rounded text-sm ${
+                            className={`flex items-center px-2 py-1 rounded text-xs ${
                               user.inviteInfo.status !== 'suspended'
                                 ? 'bg-orange-100 text-orange-800 hover:bg-orange-200'
                                 : 'bg-gray-100 text-gray-800 cursor-not-allowed'
                             }`}
                             title="Suspend User"
                           >
-                            <Ban size={14} className="mr-1" />
+                            <Ban size={12} className="mr-1" />
                             Suspend
                           </button>
                           <button
                             onClick={() => openSuspendConfirmation(user.id, 'delete')}
                             disabled={isSubmitting}
-                            className="flex items-center px-3 py-1 rounded text-sm bg-red-100 text-red-800 hover:bg-red-200"
+                            className="flex items-center px-2 py-1 rounded text-xs bg-red-100 text-red-800 hover:bg-red-200"
                             title="Delete User"
                           >
-                            <Trash2 size={14} className="mr-1" />
+                            <Trash2 size={12} className="mr-1" />
                             Delete
                           </button>
                         </div>
