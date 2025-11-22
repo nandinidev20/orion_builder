@@ -84,5 +84,6 @@ userSchema.index({ role: 1 });
 userSchema.index({ studio: 1 });
 userSchema.index({ emailVerified: 1 });
 userSchema.index({ otp: 1 });
+userSchema.index({ isSuperAdmin: 1 });
 
 export default mongoose.model('User', userSchema);
