@@ -353,7 +353,7 @@ const Users = () => {
                             ? 'bg-purple-100 text-purple-800'
                             : 'bg-blue-100 text-blue-800'
                         }`}>
-                          {user.isSuperAdmin ? '👑 Super Admin' : (user.role === 'admin' ? 'Admin' : 'Studio User')}
+                          {user.role === 'admin' ? 'Admin' : 'Studio User'}
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
