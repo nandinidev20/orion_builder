@@ -1,0 +1,26 @@
+{
+    "title": "asdadas",
+    "subtitle": "dsad",
+    "description": "asdasd",
+    "icon": "samsung-frame-tv-image (16).png",
+    "startDate": "2025-10-07",
+    "startTime": "16:43",
+    "endDate": "2025-10-05",
+    "endTime": "19:40",
+    "completionTitle": "asdsa",
+    "completionDescription": "asdsad",
+    "stages": [
+        {
+            "id": 1761304285697,
+            "position": 0,
+            "type": "video",
+            "title": "asdsad",
+            "description": "dasdasd",
+            "buttonSettings": "tap",
+            "buttonName": "Tap to Unlock",
+            "codeValue": "",
+            "uploadedFile": {},
+            "pastedText": ""
+        }
+    ]
+}
