@@ -363,49 +363,35 @@ const Users = () => {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex flex-wrap gap-2">
-                          {currentUser?.isSuperAdmin && (
-                            <>
-                              {user.role !== 'admin' && (
-                                <button
-                                  onClick={() => openRoleModal(user, 'make-admin')}
-                                  disabled={isSubmitting}
-                                  className="flex items-center px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800 hover:bg-indigo-200"
-                                  title="Make Admin"
-                                >
-                                  Make Admin
-                                </button>
-                              )}
-                              {user.role === 'admin' && !user.isSuperAdmin && (
-                                <>
-                                  <button
-                                    onClick={() => openRoleModal(user, 'remove-admin')}
-                                    disabled={isSubmitting}
-                                    className="flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                                    title="Remove Admin"
-                                  >
-                                    Remove Admin
-                                  </button>
-                                  <button
-                                    onClick={() => openRoleModal(user, 'set-super-admin')}
-                                    disabled={isSubmitting}
-                                    className="flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800 hover:bg-purple-200"
-                                    title="Set as Super Admin"
-                                  >
-                                    Set Super Admin
-                                  </button>
-                                </>
-                              )}
-                              {(user.role === 'admin' || user.role === 'studio') && (
-                                <button
-                                  onClick={() => openResetPasswordModal(user)}
-                                  disabled={isSubmitting}
-                                  className="flex items-center px-2 py-1 rounded text-xs bg-cyan-100 text-cyan-800 hover:bg-cyan-200"
-                                  title="Reset Password"
-                                >
-                                  Reset Password
-                                </button>
-                              )}
-                            </>
+                          {user.role !== 'admin' && (
+                            <button
+                              onClick={() => openRoleModal(user, 'make-admin')}
+                              disabled={isSubmitting}
+                              className="flex items-center px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800 hover:bg-indigo-200"
+                              title="Make Admin"
+                            >
+                              Make Admin
+                            </button>
+                          )}
+                          {user.role === 'admin' && (
+                            <button
+                              onClick={() => openRoleModal(user, 'remove-admin')}
+                              disabled={isSubmitting}
+                              className="flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                              title="Remove Admin"
+                            >
+                              Remove Admin
+                            </button>
+                          )}
+                          {(user.role === 'admin' || user.role === 'studio') && (
+                            <button
+                              onClick={() => openResetPasswordModal(user)}
+                              disabled={isSubmitting}
+                              className="flex items-center px-2 py-1 rounded text-xs bg-cyan-100 text-cyan-800 hover:bg-cyan-200"
+                              title="Reset Password"
+                            >
+                              Reset Password
+                            </button>
                           )}
                           {user.inviteInfo.status === 'suspended' ? (
                             <button
