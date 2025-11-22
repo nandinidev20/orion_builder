@@ -156,18 +156,22 @@ const ExperienceFlow = ({ experiences, setExperiences, onEdit }) => {
 
                   {/* Action Buttons */}
                   <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end gap-2">
-                    <button 
+                    <button
                       className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors"
-                      onClick={() => handleEdit(experience, index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(experience, index);
+                      }}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
                       Edit
                     </button>
-                    <button 
+                    <button
                       className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         const newExperiences = [...experiences];
                         newExperiences.splice(index, 1);
                         setExperiences(newExperiences);
