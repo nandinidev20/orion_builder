@@ -197,7 +197,15 @@ const EditExperience = () => {
   };
 
   // Function to add a new stage or update an existing one
- const addStage = (resetFileInput) => {
+  const addStage = (resetFileInput) => {
+    // Validate that content has been provided
+    const hasContent = stageEditorData.uploadedFile || stageEditorData.pastedText;
+
+    if (!hasContent) {
+      alert(`Please ${stageEditorData.stageType === 'text' ? 'upload a file or paste text' : 'upload a file'} before saving the stage.`);
+      return;
+    }
+
     const stageData = {
       id: editingStageIndex !== null ? experienceData.stages[editingStageIndex].id : Date.now(), // Use existing ID if editing
       position: editingStageIndex !== null ? experienceData.stages[editingStageIndex].position : experienceData.stages.length, // Position index
@@ -239,11 +247,40 @@ const EditExperience = () => {
       uploadedFile: null,
       pastedText: ''
     }));
-    
+
     // Reset file input element
     if (resetFileInput) {
       resetFileInput();
     }
+  };
+
+  // Function to finalize stage save when editing
+  const finalizeStageSave = () => {
+    // Validate that content has been provided
+    const hasContent = stageEditorData.uploadedFile || stageEditorData.pastedText;
+
+    if (!hasContent) {
+      alert(`Please ${stageEditorData.stageType === 'text' ? 'upload a file or paste text' : 'upload a file'} before saving the stage.`);
+      return;
+    }
+
+    // The auto-sync has already updated the stages array, we just need to finalize
+    console.log('Stage save finalized for index:', editingStageIndex);
+
+    // Reset editing state
+    setEditingStageIndex(null);
+
+    // Reset stage editor
+    setStageEditorData(prev => ({
+      ...prev,
+      stageTitle: '',
+      stageDescription: '',
+      buttonSettings: 'tap',
+      buttonName: 'Tap to Unlock',
+      codeValue: '',
+      uploadedFile: null,
+      pastedText: ''
+    }));
   };
 
   // Function to handle editing an existing stage
@@ -335,25 +372,32 @@ const EditExperience = () => {
 
             {/* Column 2: Stage Editor (larger) */}
             <div className="lg:col-span-6">
-              <StageEditor 
-                stageEditorData={stageEditorData}
-                updateStageEditorData={updateStageEditorData}
-                addStage={addStage}
-                isEditing={editingStageIndex !== null}
-                onCancelEdit={() => {
-                  setEditingStageIndex(null);
-                  setStageEditorData({
-                    stageType: 'video',
-                    stageTitle: '',
-                    stageDescription: '',
-                    buttonSettings: 'tap',
-                    buttonName: 'Tap to Unlock',
-                    codeValue: '',
-                    uploadedFile: null,
-                    pastedText: ''
-                  });
-                }}
-              />
+              {editingStageIndex !== null ? (
+                <StageEditor
+                  stageEditorData={stageEditorData}
+                  updateStageEditorData={updateStageEditorData}
+                  addStage={addStage}
+                  isEditing={editingStageIndex !== null}
+                  editingStageIndex={editingStageIndex}
+                  experienceData={experienceData}
+                  updateExperienceData={updateExperienceData}
+                  onCancelEdit={finalizeStageSave}
+                />
+              ) : (
+                <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors h-full min-h-[400px] flex flex-col">
+                  <div className="flex flex-col items-center justify-center py-16 px-8">
+                    <div className="bg-blue-50 rounded-full p-6 mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Select a Stage to Edit</h3>
+                    <p className="text-gray-500 text-center mb-4 max-w-md">
+                      Click on any stage in the Experience Flow to edit it. Your changes will automatically sync to the system.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Column 3: Session Settings (smaller) - for content tab, we'll show a placeholder or keep it empty */}

@@ -492,6 +492,7 @@ const getAllUsers = async (req, res, next) => {
         name: user?.username || invite.name || 'N/A',
         email: invite.email,
         studioName: user?.studio?.studioName || 'Not Registered',
+        role: user?.role || 'studio',
         status: user
           ? (user.isActive ? (user.studio && user.studio.isSuspended ? 'suspended' : 'active') : 'inactive')
           : invite.status || 'invited',
@@ -945,6 +946,111 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+// Make a studio user into an admin
+const makeAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Can only promote studio users to admin
+    if (user.role === 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'User is already an admin'
+      });
+    }
+
+    user.role = 'admin';
+    await user.save();
+
+    res.success({ user }, 'User promoted to admin successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Remove admin role from a user
+const removeAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Cannot remove admin from super admin
+    if (user.isSuperAdmin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot remove admin role from the super admin'
+      });
+    }
+
+    // Can only demote admin users
+    if (user.role !== 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'User is not an admin'
+      });
+    }
+
+    user.role = 'studio';
+    await user.save();
+
+    res.success({ user }, 'User demoted to studio user successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Reset a user's password (admin only)
+const resetUserPassword = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    // Validate password
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Reset the password on the associated studio if it exists
+    if (user.studio) {
+      const studio = await Studio.findById(user.studio).select('+password');
+      if (studio) {
+        studio.password = newPassword;
+        await studio.save();
+      }
+    }
+
+    res.success({ user }, 'Password reset successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getDashboardStats,
   getRecentStudios,
@@ -962,6 +1068,10 @@ export {
   suspendUser,
   reactivateUser,
   deleteUser,
+  // Admin role management functions
+  makeAdmin,
+  removeAdmin,
+  resetUserPassword,
   // Admin settings functions
   changeAdminEmail,
   changeAdminPassword

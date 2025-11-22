@@ -39,16 +39,16 @@ const getTypeIcon = (type) => {
 
 const ExperienceCard = ({ experience }) => {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3 group/card">
       <div className="flex-shrink-0 mt-0.5">
         {getTypeIcon(experience.type)}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="text-sm font-semibold text-gray-900 leading-tight">{experience.title}</h4>
+          <h4 className="text-sm font-semibold text-gray-900 leading-tight group-hover/card:text-indigo-600 transition-colors">{experience.title}</h4>
           <span className="text-xs text-gray-500 whitespace-nowrap flex-shrink-0">{experience.duration}</span>
         </div>
-        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{experience.description}</p>
+        <p className="text-sm text-gray-600 mt-1.5 leading-relaxed group-hover/card:text-gray-700 transition-colors">{experience.description}</p>
       </div>
     </div>
   );
@@ -133,15 +133,26 @@ const ExperienceFlow = ({ experiences, setExperiences, onEdit }) => {
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`group relative bg-white rounded-lg border-2 transition-all duration-200 ${
-                  draggedIndex === index 
-                    ? 'opacity-40 scale-95 border-indigo-400 shadow-lg' 
-                    : 'border-gray-200 hover:border-indigo-300 hover:shadow-md cursor-grab active:cursor-grabbing'
+                onClick={() => handleEdit(experience, index)}
+                className={`group relative bg-white rounded-lg border-2 transition-all duration-200 cursor-pointer ${
+                  draggedIndex === index
+                    ? 'opacity-40 scale-95 border-indigo-400 shadow-lg'
+                    : 'border-gray-200 hover:border-indigo-400 hover:shadow-lg active:border-indigo-500'
                 }`}
               >
                 {/* Drag Handle Indicator */}
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-400 to-purple-400 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                
+
+                {/* Click Indicator Overlay */}
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="bg-indigo-500 text-white text-xs font-semibold px-2.5 py-1 rounded flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    Click to Edit
+                  </div>
+                </div>
+
                 <div className="p-4">
                   {/* Stage Number Badge */}
                   <div className="flex items-start gap-3">
@@ -155,18 +166,22 @@ const ExperienceFlow = ({ experiences, setExperiences, onEdit }) => {
 
                   {/* Action Buttons */}
                   <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end gap-2">
-                    <button 
+                    <button
                       className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors"
-                      onClick={() => handleEdit(experience, index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(experience, index);
+                      }}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
                       Edit
                     </button>
-                    <button 
+                    <button
                       className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         const newExperiences = [...experiences];
                         newExperiences.splice(index, 1);
                         setExperiences(newExperiences);

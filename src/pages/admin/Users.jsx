@@ -9,8 +9,14 @@ const Users = () => {
   const [showSuspendConfirmation, setShowSuspendConfirmation] = useState(false);
   const [userToSuspend, setUserToSuspend] = useState(null);
   const [actionType, setActionType] = useState(null);
- const [newInvite, setNewInvite] = useState({ name: '', email: '' });
+  const [newInvite, setNewInvite] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [userToModify, setUserToModify] = useState(null);
+  const [roleAction, setRoleAction] = useState(null);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [userToReset, setUserToReset] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -187,6 +193,87 @@ const Users = () => {
     setActionType(null);
   };
 
+  // Function to handle opening role change confirmation
+  const openRoleModal = (user, action) => {
+    setUserToModify(user);
+    setRoleAction(action);
+    setShowRoleModal(true);
+  };
+
+  // Function to handle role change
+  const confirmRoleChange = async () => {
+    if (!userToModify || !roleAction) return;
+    setIsSubmitting(true);
+
+    try {
+      let endpoint = '';
+      if (roleAction === 'make-admin') {
+        endpoint = `/admin/users/${userToModify.id}/make-admin`;
+      } else if (roleAction === 'remove-admin') {
+        endpoint = `/admin/users/${userToModify.id}/remove-admin`;
+      }
+
+      if (endpoint) {
+        const response = await api.post(endpoint);
+        if (response.data.success) {
+          await fetchUsers();
+          alert('Role updated successfully!');
+        }
+      }
+    } catch (error) {
+      console.error(`Error updating role:`, error);
+      const errorMessage = error.response?.data?.message || 'Failed to update role';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+      setShowRoleModal(false);
+      setUserToModify(null);
+      setRoleAction(null);
+    }
+  };
+
+  // Function to open reset password modal
+  const openResetPasswordModal = (user) => {
+    setUserToReset(user);
+    setNewPassword('');
+    setShowResetPasswordModal(true);
+  };
+
+  // Function to handle password reset
+  const confirmResetPassword = async () => {
+    if (!userToReset || !newPassword) {
+      alert('Please enter a new password');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      alert('Password must be at least 8 characters long');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await api.post(`/admin/users/${userToReset.id}/reset-password`, {
+        newPassword
+      });
+
+      if (response.data.success) {
+        alert('Password reset successfully!');
+        await fetchUsers();
+        setShowResetPasswordModal(false);
+        setUserToReset(null);
+        setNewPassword('');
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to reset password';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Function to get status badge class
   const getStatusClass = (status) => {
     switch (status) {
@@ -241,14 +328,15 @@ const Users = () => {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Studio Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invite Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-4 py-8 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td colSpan="7" className="px-4 py-8 whitespace-nowrap text-sm text-gray-500 text-center">
                       No users found
                     </td>
                   </tr>
@@ -260,57 +348,96 @@ const Users = () => {
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{user.studioName}</td>
                       <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          user.role === 'admin'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {user.role === 'admin' ? 'Admin' : 'Studio User'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(user.inviteInfo.status)}`}>
                           {user.inviteInfo.status.charAt(0).toUpperCase() + user.inviteInfo.status.slice(1)}
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex space-x-2">
+                        <div className="flex flex-wrap gap-2">
+                          {user.role !== 'admin' && (
+                            <button
+                              onClick={() => openRoleModal(user, 'make-admin')}
+                              disabled={isSubmitting}
+                              className="flex items-center px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800 hover:bg-indigo-200"
+                              title="Make Admin"
+                            >
+                              Make Admin
+                            </button>
+                          )}
+                          {user.role === 'admin' && (
+                            <button
+                              onClick={() => openRoleModal(user, 'remove-admin')}
+                              disabled={isSubmitting}
+                              className="flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                              title="Remove Admin"
+                            >
+                              Remove Admin
+                            </button>
+                          )}
+                          {(user.role === 'admin' || user.role === 'studio') && (
+                            <button
+                              onClick={() => openResetPasswordModal(user)}
+                              disabled={isSubmitting}
+                              className="flex items-center px-2 py-1 rounded text-xs bg-cyan-100 text-cyan-800 hover:bg-cyan-200"
+                              title="Reset Password"
+                            >
+                              Reset Password
+                            </button>
+                          )}
                           {user.inviteInfo.status === 'suspended' ? (
                             <button
                               onClick={() => handleReactivateUser(user.id)}
                               disabled={isSubmitting}
-                              className="flex items-center px-3 py-1 rounded text-sm bg-green-100 text-green-800 hover:bg-green-20"
+                              className="flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800 hover:bg-green-200"
                               title="Reactivate User"
                             >
-                              <Send size={14} className="mr-1" />
+                              <Send size={12} className="mr-1" />
                               Reactivate
                             </button>
                           ) : (
                             <button
                               onClick={() => handleResendInvite(user.id)}
                               disabled={isSubmitting || user.inviteInfo.status !== 'expired'}
-                              className={`flex items-center px-3 py-1 rounded text-sm ${
-                                user.inviteInfo.status === 'expired' 
-                                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' 
+                              className={`flex items-center px-2 py-1 rounded text-xs ${
+                                user.inviteInfo.status === 'expired'
+                                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
                                   : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
                               }`}
                               title="Resend Invite"
                             >
-                              <Send size={14} className="mr-1" />
+                              <Send size={12} className="mr-1" />
                               Resend
                             </button>
                           )}
                           <button
                             onClick={() => openSuspendConfirmation(user.id)}
                             disabled={isSubmitting || user.inviteInfo.status === 'suspended'}
-                            className={`flex items-center px-3 py-1 rounded text-sm ${
+                            className={`flex items-center px-2 py-1 rounded text-xs ${
                               user.inviteInfo.status !== 'suspended'
                                 ? 'bg-orange-100 text-orange-800 hover:bg-orange-200'
                                 : 'bg-gray-100 text-gray-800 cursor-not-allowed'
                             }`}
                             title="Suspend User"
                           >
-                            <Ban size={14} className="mr-1" />
+                            <Ban size={12} className="mr-1" />
                             Suspend
                           </button>
                           <button
                             onClick={() => openSuspendConfirmation(user.id, 'delete')}
                             disabled={isSubmitting}
-                            className="flex items-center px-3 py-1 rounded text-sm bg-red-100 text-red-800 hover:bg-red-200"
+                            className="flex items-center px-2 py-1 rounded text-xs bg-red-100 text-red-800 hover:bg-red-200"
                             title="Delete User"
                           >
-                            <Trash2 size={14} className="mr-1" />
+                            <Trash2 size={12} className="mr-1" />
                             Delete
                           </button>
                         </div>
@@ -549,6 +676,107 @@ const Users = () => {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Role Management Modal */}
+      {showRoleModal && userToModify && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {roleAction === 'make-admin' && 'Make Admin'}
+                {roleAction === 'remove-admin' && 'Remove Admin'}
+              </h2>
+              <button
+                onClick={() => setShowRoleModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <p className="mb-6 text-gray-700">
+              {roleAction === 'make-admin' && `Are you sure you want to make ${userToModify.name} an admin? They will have access to admin management tools.`}
+              {roleAction === 'remove-admin' && `Are you sure you want to remove admin privileges from ${userToModify.name}? They will be downgraded to a studio user.`}
+            </p>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setShowRoleModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmRoleChange}
+                disabled={isSubmitting}
+                className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-50 ${
+                  roleAction === 'make-admin'
+                    ? 'bg-indigo-600 hover:bg-indigo-700'
+                    : 'bg-yellow-600 hover:bg-yellow-700'
+                }`}
+              >
+                {isSubmitting ? 'Updating...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {showResetPasswordModal && userToReset && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Reset Password</h2>
+              <button
+                onClick={() => setShowResetPasswordModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <p className="mb-4 text-gray-700">
+              Set a new password for <strong>{userToReset.name}</strong> ({userToReset.email})
+            </p>
+
+            <form onSubmit={(e) => { e.preventDefault(); confirmResetPassword(); }}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Enter new password (min. 8 characters)"
+                  required
+                  minLength={8}
+                />
+                <p className="mt-1 text-sm text-gray-500">* Password must be at least 8 characters long</p>
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowResetPasswordModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || newPassword.length < 8}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Resetting...' : 'Reset Password'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

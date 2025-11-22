@@ -2,12 +2,12 @@ import express from 'express';
 const router = express.Router();
 import { auth, authorize } from '../middleware/auth.js';
 import {
-  getDashboardStats,
-  getRecentStudios,
+ getDashboardStats,
+ getRecentStudios,
   getRecentExperiences,
   getPlatformOverview,
   // Additional studio management functions
-  getAllStudios,
+ getAllStudios,
   createStudio,
   updateStudio,
   deleteStudio,
@@ -21,6 +21,7 @@ import {
   // Admin role management functions
   makeAdmin,
   removeAdmin,
+  setSuperAdmin,
   resetUserPassword,
   // Admin settings functions
   changeAdminEmail,
@@ -65,9 +66,10 @@ router.post('/users/:id/suspend', auth, authorize('admin'), suspendUser);
 router.delete('/users/:id', auth, authorize('admin'), deleteUser);
 router.post('/users/:id/reactivate', auth, authorize('admin'), reactivateUser);
 
-// Admin role management routes (admin only)
+// Admin role management routes (super admin only)
 router.post('/users/:id/make-admin', auth, authorize('admin'), makeAdmin);
 router.post('/users/:id/remove-admin', auth, authorize('admin'), removeAdmin);
+router.post('/users/:id/set-super-admin', auth, authorize('admin'), setSuperAdmin);
 router.post('/users/:id/reset-password', auth, authorize('admin'), resetUserPassword);
 
 // Admin settings routes
