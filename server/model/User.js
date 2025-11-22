@@ -24,10 +24,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  isSuperAdmin: {
-    type: Boolean,
-    default: false
-  },
   lastLogin: {
     type: Date,
     default: null
