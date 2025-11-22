@@ -176,7 +176,7 @@ const HLSMediaPreview = ({ src, fileType, fileName, experienceId, stageId, isSto
   }
 };
 
-const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditing, onCancelEdit, experienceId, stageId }) => {
+const StageEditor = ({ stageEditorData, updateStageEditorData, addStage, isEditing, onCancelEdit, experienceId, stageId, editingStageIndex, experienceData, updateExperienceData }) => {
   const {
     stageType,
     stageTitle,
