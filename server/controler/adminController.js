@@ -974,15 +974,6 @@ const deleteUser = async (req, res, next) => {
 const makeAdmin = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const currentUser = req.user;
-
-    // Only super admin can make users admins
-    if (!currentUser.isSuperAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Only super admin can promote users to admin'
-      });
-    }
 
     const user = await User.findById(id);
     if (!user) {
